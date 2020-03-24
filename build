@@ -1,0 +1,53 @@
+#!/bin/csh -f
+#
+# build - build script for LG Escher
+
+# ******* NOTE TO USERS: replace this with the path of your Java 1.4.2 javac compiler.
+set JAVAC = /home/dj/jdks/j2sdk1.4.2_14/bin/javac
+
+set arch = `/bin/arch`
+if ($arch == i86pc) then
+    set os = solaris
+    set osname = Solaris
+else
+if ($arch == i686) then
+    set os = linux
+    set osname = Linux
+else
+    echo "Cannot build LG Escher on architecture " $arch
+    exit 1
+endif
+endif
+
+if ($os == linux) then
+
+    # Compile java files in gnu directory
+    echo -n "Linux build: Compiling java files ...";
+    find gnu -name "*.java" | xargs $JAVAC
+    echo " "
+
+    # Create native header files
+    echo -n "Linux build: Creating native header files ...";
+    javah gnu.x11.EscherSocket
+    javah gnu.x11.EscherOutputStream
+    javah gnu.x11.EscherDataInputStream
+    echo " "
+
+    # Build jar file
+    echo -n "Linux build: Building jar file ...";
+    find gnu -name "*.class" | xargs jar -cM0f escher-0.2.2.lg.jar
+    echo " "
+
+else
+    echo "Solaris build: skip java compile and jar"
+endif
+
+# Build native code
+echo -n "$osname build: Building native library ...";
+cd gnu/native
+./build
+echo " "
+
+echo "BUILD COMPLETE"
+
+

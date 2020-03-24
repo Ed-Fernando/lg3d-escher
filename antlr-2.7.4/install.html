@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>Installation Instructions for ANTLR 2.7.3</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<table border="0">
+  <tr>
+    <td align="center" valign="top" width="120">&nbsp;<p><a href="http://www.jguru.com"><img
+    src="doc/j-guru-blue.jpg" width="70" height="80" alt="j-guru-blue.jpg (8086 bytes)"
+    border="0"></a></p>
+    <p><a href="http://www.antlr.org" style="color: rgb(255,255,255)"><font face="Arial"
+    color="#000000"><small><strong>ANTLR</strong></small></font></a></p>
+    <p><a href="http://www.jguru.com"><small><font face="Arial" color="#000000"><strong>jGuru</strong></font></small></a></td>
+    <td></td>
+    <td valign="top" width="520"><table border="0">
+      <tr>
+        <td width="520" bgcolor="#99CCFF"><strong>I<font size="2">NSTALLATION</font></strong></td>
+      </tr>
+    </table>
+    <p><strong>ANTLR 2.7.3 Installation</strong></p>
+    <p>ANTLR comes as a single zip or compressed tar file. Unzipping the file you receive will
+    produce a directory called <tt>antlr-2.7.3</tt> with subdirectories <tt>antlr</tt>, <tt>doc</tt>,
+    <tt>examples</tt>, and <tt>lib</tt>.  You will find <tt>antlr.jar</tt> (<400k), which contains all the runtime necessary to use ANTLR-generated Java-based recognizers but also the ANTLR tool itself.  
+    You need to place the <tt>antlr-2.7.3/antlr.jar</tt> jar in your <tt>CLASSPATH</tt>
+    environment variable so the ANTLR .class files can be seen. For example, if you placed <tt>antlr-2.7.3</tt> in directory <tt>/tools</tt>,
+    you need to append </p>
+    <blockquote>
+      <p><tt>/tools/antlr-2.7.3/antlr.jar</tt> </p>
+    </blockquote>
+    <p>to your <tt>CLASSPATH</tt> or. </p>
+    <blockquote>
+      <p><tt>\tools\antlr-2.7.3/antlr.jar</tt></p>
+    </blockquote>
+    <p>if you work on a Windows box.</p>
+    <p>References to <tt>antlr.*</tt> will map to <tt>/tools/antlr-2.7.3/antlr/*.class</tt>.</p>
+    <p>You must have at least JDK 1.1 installed properly on your machine.&nbsp; The ASTFrame
+    AST viewer uses Swing 1.1 package names now.</p>
+    <table border="0">
+      <tr>
+        <td width="520" bgcolor="#99CCFF"><strong>R<font size="2">UNNING </font>A<font size="2">NTLR</font></strong></td>
+      </tr>
+    </table>
+    <p>ANTLR is a command line tool (although many development environments let you run ANTLR
+    on grammar files from within the environment). The <font face="Courier New">main</font>
+    method within <font face="Courier New">antlr.Tool</font> is the ANTLR entry point.</p>
+    <blockquote>
+      <p><tt>java antlr.Tool file.g</tt> </p>
+    </blockquote>
+    <p>If you have trouble running ANTLR, ensure that you have Java installed correctly and
+    then ensure that you have the appropriate <tt>CLASSPATH</tt> set.
+
+    <p>
+    See <a href="doc/getting-started.html"><b>Getting started</b></a>.
+<P>
+    <table border="0">
+      <tr>
+        <td width="520" bgcolor="#99CCFF"><strong>B<font size="2">UILDING </font>A<font size="2">NTLR</font></strong></td>
+      </tr>
+    </table>
+
+    <p>If you alter ANTLR itself (i.e., it's Java files) and you want to
+    rebuild ANTLR itself, make sure that the Java files in the
+    <tt>antlr/build</tt> directory are compiled (just jump in and say
+    "javac *.java").  Then, from the antlr-2.7.3 directory you can run
+    the portable antlr self-build:
+
+<pre>
+java antlr.build.Tool build
+</pre>
+
+To make the jar file
+
+<pre>
+java antlr.build.Tool jar
+</pre>
+
+This uses property <tt>antlr.build.root</tt> to figure out where the
+antlr dir associated with the antlr package resides.  It defaults to "." (current directory).  You may also set the compiler as in:
+
+<pre>
+java -Dantlr.build.compiler=jikes antlr.build.Tool build
+</pre>
+
+I have tested this on win2k (cmd shell and bash from GNU) and Mac OS X.
+Further, I have removed all of the build shell scripts and mkjar type
+scripts I had since there is only one all encompassing antlr.jar now and a self-build tool.
+
+<p>See the associated doc files for <a href="doc/cpp-runtime.html"><b>building C++</b></a> or <a href="doc/csharp-runtime.html"><b>building C#</b></a> support files.
+
+</td>
+  </tr>
+</table>
+</body>
+</html>

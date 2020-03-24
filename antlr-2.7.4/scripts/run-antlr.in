@@ -1,0 +1,10 @@
+#!/bin/sh
+prefix=@prefix@
+ANTLR_JAR=@datadir@/@PACKAGE_NAME@-@PACKAGE_VERSION@/antlr.jar
+if test "x$CLASSPATH" = x; then
+	CLASSPATH=${ANTLR_JAR}
+else
+	CLASSPATH=${ANTLR_JAR}@PATH_SEPARATOR@${CLASSPATH}
+fi
+export CLASSPATH
+@JAVA@ antlr.Tool $*

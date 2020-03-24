@@ -1,0 +1,40 @@
+#!/bin/csh -f
+
+set arch = `/bin/arch`
+if ($arch == i86pc) then
+    set os = solaris
+else
+if ($arch == i686) then
+    set os = linux
+else
+    echo "Cannot build LG Escher on architecture " $arch
+    exit 1
+endif
+endif
+
+setenv BUILD_DIR ../../builddir
+setenv BUILD_PLAT_DIR $BUILD_DIR/platform/$os/$arch
+setenv BUILD_PLAT_LIB_DIR $BUILD_PLAT_DIR/lib
+if (! -e $BUILD_PLAT_LIB_DIR) then
+    mkdir -p $BUILD_PLAT_LIB_DIR
+endif
+
+if ($os == linux) then
+    setenv OS_INCL "-I$JAVA_HOME/include/linux"
+    setenv CC "gcc -DLINUX"
+    setenv LDFLAGS_SO "-shared"
+else
+    setenv OS_INCL "-I$JAVA_HOME/include/solaris"
+    setenv CC "cc -DSOLARIS"
+    setenv LDFLAGS_SO "-Bdynamic -xF -G"
+endif
+
+setenv INCLUDES "-I../.. -I$JAVA_HOME/include $OS_INCL"
+
+$CC EscherSocket.c -c $INCLUDES
+$CC EscherOutputStream.c -c $INCLUDES
+$CC EscherDataInputStream.c -c $INCLUDES
+
+
+$CC $LDFLAGS_SO -o libEscher.so EscherSocket.o EscherOutputStream.o EscherDataInputStream.o
+mv libEscher.so $BUILD_PLAT_LIB_DIR

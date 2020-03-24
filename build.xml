@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="all" name="escher-0.2.2">
+
+    <target name="compile">
+        <mkdir dir="build"/>
+	<javac 
+             srcdir="gnu"
+             destdir="build"
+             classpath="build"
+             source="1.4"
+             target="1.4"
+             debug="on"
+             nowarn="true"
+  	/>
+    </target>
+
+
+    <target name="jar">
+        <jar basedir="build"
+             compress="false"
+             includes="gnu/**,COPYING-BSD"
+             excludes="**/*.java,**/*.html"
+	     jarfile="escher-0.2.2.jar"/>
+    </target>
+
+</project>
+                                                                                
+

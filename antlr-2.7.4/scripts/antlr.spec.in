@@ -1,0 +1,42 @@
+Summary: ANTLR Parser generator tool
+Name: antlr
+Version: @VERSION@
+Release: 1
+License: Public Domain
+Group: Development/Tools
+Source: http://www.antlr.org/download/antlr-%{version}.tar.gz
+Buildroot: %{_tmppath}/%{name}-%{version}-root
+URL: http://www.antlr.org/
+
+%description
+ANTLR, ANother Tool for Language Recognition, (formerly PCCTS) is a
+language tool that provides a framework for constructing recognizers,
+compilers, and translators from grammatical descriptions containing Java,
+C#, or C++ actions. ANTLR provides excellent support for tree construction,
+tree walking, and translation.
+
+%prep
+%setup -q
+%build
+%configure --enable-gcj
+make CXXFLAGS="$RPM_OPT_FLAGS"
+
+%install
+rm -rf $RPM_BUILD_ROOT
+
+make install DESTDIR="$RPM_BUILD_ROOT"
+
+%files
+%defattr(-,root,root)
+%doc doc install.html extras examples lib/cpp/README lib/cpp/TODO
+%{_bindir}/*
+%{_includedir}/antlr
+%{_libdir}/*
+%{_datadir}/*
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%changelog
+* Thu Aug 21 2003 Ric Klaren <klaren@cs.utwente.nl>
+- First stab at RPM for RH9

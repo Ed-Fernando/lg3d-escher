@@ -1,0 +1,161 @@
+# Process this file with autoconf to produce a configure script.
+AC_INIT(antlr, 2.7.4)
+AC_CONFIG_AUX_DIR(scripts)
+
+VERSION=`echo $PACKAGE_VERSION | cut -d . -f 1`
+SUBVERSION=`echo $PACKAGE_VERSION | cut -d . -f 2`
+PATCHLEVEL=`echo $PACKAGE_VERSION | cut -d . -f 3`
+
+AC_SUBST(VERSION)
+AC_SUBST(SUBVERSION)
+AC_SUBST(PATCHLEVEL)
+
+AC_MSG_CHECKING(if examples must be built)
+AC_ARG_ENABLE(examples,
+[  --enable-examples       Compile examples per default],
+   WITH_EXAMPLES=yes,
+	WITH_EXAMPLES=no
+)
+AC_SUBST(WITH_EXAMPLES)
+AC_MSG_RESULT($WITH_EXAMPLES)
+
+# get host_os set
+AC_CANONICAL_HOST
+# Detect cygwin
+AC_MSG_CHECKING(if we are using Cygwin/MinGW)
+case $host_os in
+   *cygwin* )
+	   ANTLR_CYGWIN=yes
+		ANTLR_MINGW=no
+		ANTLR_WIN32=yes
+	   AC_MSG_WARN([Enabling untested cygwin fixes, please give feedback!])
+	;;
+   *mingw* )
+	   ANTLR_MINGW=yes
+		ANTLR_CYGWIN=no
+		ANTLR_WIN32=yes
+	   AC_MSG_WARN([Enabling untested cygwin fixes, please give feedback!])
+	;;
+   * )
+		ANTLR_CYGWIN=no
+		ANTLR_MINGW=no
+		ANTLR_WIN32=no
+	;;
+esac
+AC_MSG_RESULT($ANTLR_CYGWIN)
+AC_SUBST(ANTLR_CYGWIN)
+AC_MSG_RESULT($ANTLR_MINGW)
+AC_SUBST(ANTLR_MINGW)
+AC_SUBST(ANTLR_WIN32)
+
+AC_MSG_CHECKING(if we prefer gcj built over normal java)
+AC_ARG_ENABLE(gcj,
+[  --enable-gcj            Use gcj in stead of java and build native binary],
+   WITH_GCJ=yes,
+	WITH_GCJ=no
+)
+AC_SUBST(WITH_GCJ)
+AC_MSG_RESULT($WITH_GCJ)
+if test "x$WITH_GCJ" = xyes; then
+  AC_MSG_WARN([*********************************************************])
+  AC_MSG_WARN([* GCJ built is experimental, success will depend on     *])
+  AC_MSG_WARN([* platform It may compile, or not, or just crash...     *])
+  AC_MSG_WARN([* Also the Makefile is not very polished for it -> YMMV *])
+  AC_MSG_WARN([*********************************************************])
+fi
+
+AC_MSG_CHECKING(if BOOTSTRAP_JAR is set)
+AC_ARG_VAR(BOOTSTRAP_JAR,[An alternative ANTLR jar to bootstrap a cleaned distribution])
+if test "x$BOOTSTRAP_JAR" = "x"; then
+  BOOTSTRAP_JAR="${TOPDIR}/antlr.jar"
+  AC_MSG_RESULT(no)
+else
+  AC_MSG_RESULT(${BOOTSTRAP_JAR})
+fi
+
+# Checks for system programs listed in Config.make(.in)...
+# XXX: Should AC_PATH_PROG(S) be replaced by AC_PATH_TOOL(S) for consistency
+# XXX: with, e.g., AC_PROG_RANLIB, that sets its variable to ":" when the
+# XXX: requested tool can not be found.
+test -z "$AR"         && AC_PATH_PROGS(AR, ar$EXEEXT gar$EXEEXT, ar$EXEEXT )
+AC_SUBST(AR)
+test -z "$ARFLAGS"    && ARFLAGS=rus
+AC_SUBST(ARFLAGS)
+test -z "$AS"         && AC_PATH_PROGS(AS, as$EXEEXT gas$EXEEXT, as$EXEEXT )
+AC_SUBST(AS)
+test -z "$CYGPATH"    && AC_PATH_PROGS(CYGPATH, cygpath$EXEEXT )
+AC_SUBST(CYGPATH)
+
+# On some (rare) systems -pipe is not supported call configure with
+# CXXFLAGS=<opts without -pipe> ./configure to fix that...
+# C/C++
+AC_PROG_CC
+	if test "x$GCC" = xyes; then
+		CFLAGS="-g -O -W -Wall -pipe"
+	fi
+AC_PROG_CPP
+AC_PROG_CXX
+	if test "x$GXX" = xyes; then
+		CXXFLAGS="-g -O -felide-constructors -W -Wall -pipe"
+	fi
+AC_PROG_CXXCPP
+
+test -z "$DOXYGEN" && AC_PATH_PROG(DOXYGEN, doxygen, doxygen,  )
+
+# This seems to convince configure to use an absolute path to the backup
+# install-sh script.
+ac_install_sh="$PWD/scripts/install-sh"
+AC_PROG_INSTALL
+
+if test "x$WITH_GCJ" = "xno"; then
+	# Force the user to specify a valid classpath. Too many people are failing
+	# to do this.
+	AC_CHECK_CLASSPATH
+	AC_PROG_JAVAC
+	AC_PROG_JAVA
+	AC_PROG_JAR
+	AC_JAVA_OPTIONS
+
+	if AC_TRY_COMMAND($JAVAC $JAVACFLAGS antlr/Version.java) >/dev/null 2>&1; then
+		AC_CHECK_CLASS(antlr.Version)
+		test "$ac_cv_class_antlr_Version" = no && AC_MSG_ERROR([Could not compile testfile from distribution. Is your CLASSPATH or java-environment setup correctly?])
+	else
+		AC_MSG_ERROR([Could not compile testfile from distribution. Is your CLASSPATH or java-environment setup correctly?])
+	fi
+else
+	test -z "$GCJ"      && AC_PATH_PROGS(GCJ, gcj$EXEEXT )
+	test "x$GCJ" = x    && AC_MSG_ERROR([gcj not found in \$PATH])
+
+	test -z "$GCJFLAGS" && GCJFLAGS="--classpath=\$(TOPDIR)"
+AC_SUBST(GCJ)
+AC_SUBST(GCJFLAGS)
+fi
+
+test -z "$LD"         && AC_PATH_PROGS(LD, ld$EXEEXT gld$EXEEXT, ld$EXEEXT )
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+test -z "$MAKEDEPEND" && AC_PATH_PROG(MAKEDEPEND, makedepend$EXEEXT, makedepend$EXEEXT )
+test -z "$MKDIR"      && AC_PATH_PROG(MKDIR, mkdir$EXEEXT, mkdir$EXEEXT )
+test -z "$NM"         && AC_PATH_PROGS(NM, nm$EXEEXT gnm$EXEEXT, nm$EXEEXT )
+AC_PROG_RANLIB
+test -z "$RM"         && AC_PATH_PROG(RM, rm$EXEEXT, rm$EXEEXT )
+test -z "$STRIP"      && AC_PATH_PROGS(STRIP, strip$EXEEXT gstrip$EXEEXT, strip$EXEEXT )
+test -z "$TAR"        && AC_PATH_PROGS(TAR, gtar$EXEEXT tar$EXEEXT, tar$EXEEXT )
+test -z "$TCL"        && AC_PATH_PROG(TCL, tclsh$EXEEXT, tclsh$EXEEXT )
+test -z "$TOUCH"      && AC_PATH_PROG(TOUCH, touch$EXEEXT, touch$EXEEXT )
+test -z "$CHMOD"      && AC_PATH_PROG(CHMOD, chmod$EXEEXT, chmod$EXEEXT )
+
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([stdlib.h unistd.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_INLINE
+
+# Checks for library functions.
+AC_FUNC_MALLOC
+AC_CHECK_FUNCS([strcasecmp])
+
+AC_CONFIG_FILES([scripts/Config.make scripts/antlr-config scripts/run-antlr scripts/antlr.spec])
+AC_OUTPUT

@@ -1,0 +1,13 @@
+#!/bin/csh -fx
+#
+# clean - clean script for LG Escher
+
+find gnu -name "*.class" | xargs /bin/rm -f
+/bin/rm -f *.h
+
+cd gnu/native
+/bin/rm -f *.o *.so
+
+/bin/rm -f escher-0.2.2.lg.jar
+
+/bin/rm -f builddir

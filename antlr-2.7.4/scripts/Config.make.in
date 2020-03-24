@@ -1,0 +1,110 @@
+###############################################################################
+# $Id: Config.make.in,v 1.1.1.1 2004-12-13 19:09:15 deronj Exp $
+###############################################################################
+
+.EXPORT_ALL_VARIABLES:
+
+# For package installers..
+DESTDIR     =
+
+# usual dribble
+prefix      = @prefix@
+exec_prefix = @exec_prefix@
+datadir     = @datadir@
+libdir      = @libdir@
+includedir  = @includedir@
+bindir      = @bindir@
+
+# Version stuff...
+VERSION         = @VERSION@
+SUBVERSION      = @SUBVERSION@
+PATCHLEVEL      = @PATCHLEVEL@
+PACKAGE_NAME    = @PACKAGE_NAME@
+PACKAGE_VERSION = @PACKAGE_VERSION@
+BOOTSTRAP_JAR   = @BOOTSTRAP_JAR@
+versioneddir    = $(PACKAGE_NAME)-$(PACKAGE_VERSION)
+
+# Programs we might use and their options...
+CXX = @CXX@
+   CXXFLAGS = @CXXFLAGS@ $(ARCHFLAGS) $(INCLUDE) $(DEBUG) $(EXTRA_CXXFLAGS)
+   EXTRA_CXXFLAGS =
+
+CC = @CC@
+   CFLAGS       = @CFLAGS@
+   DEBUG        = -g -D__DEBUG__
+   EXTRA_CFLAGS =
+   INCLUDE      =
+   LDFLAGS      = @LDFLAGS@
+
+CPP = @CPP@
+   CPPFLAGS = @CPPFLAGS@
+
+GCJ = @GCJ@
+   GCJFLAGS = @GCJFLAGS@
+   EXTRA_GCJFLAGS =
+
+AR = @AR@
+   ARFLAGS       = @ARFLAGS@
+   EXTRA_ARFLAGS =
+
+CXXCPP  = @CXXCPP@
+AS      = @AS@
+LD      = @LD@
+RANLIB  = @RANLIB@
+STRIP   = @STRIP@
+
+DOXYGEN  = @DOXYGEN@
+   DOXYGEN_FLAGS  =
+
+JAVA     = @JAVA@
+   JAVA_FLAGS  = @JAVAFLAGS@
+   JAVA_PREFIX    = @JAVAPREFIX@
+
+JAVAC    = @JAVAC@
+   JAVAC_FLAGS = @JAVACFLAGS@
+
+JAR      = @JAR@
+
+ANTLR_CYGWIN   = @ANTLR_CYGWIN@
+ANTLR_MINGW    = @ANTLR_MINGW@
+ANTLR_WIN32    = @ANTLR_WIN32@
+CYGPATH        = @CYGPATH@
+PATH_SEPARATOR = @PATH_SEPARATOR@
+
+# MinGW does not have cygpath per default so we now check for it explicitly
+# MinGW seems to work without it..
+#
+# Well actually it leads us to quoting hell with '/' and '\' (in combination 
+# with java/javac it's a mess)
+#
+ifeq (,$(CYGPATH))
+  fix_path="$(1)"
+else
+  fix_path=$(shell $(CYGPATH) -wp "$(1)")
+endif
+
+ANTLR    = $(JAVA) -cp $(call fix_path,$(TOPDIR)/antlr.jar) antlr.Tool
+
+# antlr is used to build antlr
+ANTLR_BOOTSTRAP = $(JAVA) -cp $(call fix_path,"$(BOOTSTRAP_JAR)") antlr.Tool
+
+INSTALL  = @INSTALL@
+MAKEDEP  = @MAKEDEPEND@
+MKDIR    = @MKDIR@
+NM       = @NM@
+RM       = @RM@
+TAR      = @TAR@
+TCL      = @TCL@
+TOUCH    = @TOUCH@
+CHMOD    = @CHMOD@
+
+#
+# From configure enabled features...
+#
+WITH_EXAMPLES  = @WITH_EXAMPLES@
+
+#
+# These are used for the examples
+#
+ANTLR_INCS = -I$(TOPDIR)/lib/cpp
+ANTLR_LIBS = -L$(TOPDIR)/lib/cpp/src -lantlr

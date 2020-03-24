@@ -1,0 +1,22 @@
+
+This is the only way to build Escher that I have discovered.
+I was unable to use ant with the build.xml file.
+
+Note: you will need to use a javac compiler from the 1.4.2 J2SDK.
+I use one from build 06 and this seems to work okay. This is what
+I mean by $JAVAC below
+
+(All of these commands assume that you are in the top-level 
+lg3d-escher directory).
+
+To compile:
+
+% find gnu -name "*.java" | xargs $JAVAC
+
+To build the jar:
+
+% find gnu -name "*.class" | xargs jar -cM0f escher-0.2.2.lg.jar
+
+To clean the workspace:
+
+% find gnu -name "*.class" | xargs /bin/rm -f
